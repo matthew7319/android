@@ -1,3 +1,4 @@
+
 ## Matthew's Android Cheatsheet
 [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
@@ -24,7 +25,7 @@
 * `manifests`: set things like entry point for the app
 * `java`: where we find all the java code
 * `res`: where all the resources are found
-	* `drawables`: pictures
+	* `drawables`: drag and drop images into it
 	* `layout`: where the xml files are found
 	* `values`: app-wide values are found here
 		* `colors`
@@ -117,7 +118,7 @@ myTextView.setText("Hello, World!");
 * `Buttons` -> `Button`
 * Alternatively, `Common` -> `Button`
 ---
-### Sample Codes
+### Sample code to demonstrate button behaviours
 
 **Addition of two numbers**
 ```java
@@ -143,6 +144,102 @@ public class MainActivity extends AppCompatActivity {
                 resultTextView.setText("" + c);
             }
         });
+    }
+}
+```
+---
+**Core Elements of Android Development**
+* **Activity**: A rectangular box that displays something
+* **Intent**: An action being requested that the device should try to perform
+* **IntentService**: Services that can handle the intent requests and process the work to be done
+*  **Broadcast Receivers**: Receives an Intent from a `sendBroadcast` method, often indicating that some work has been completed
+---
+**Creating a Second Activity**
+* `app` -> `java` -> `com.blahblah` + `right click` -> `New` -> `Activity` -> `Basic Activity`
+* Click `Gallery` after clicking `Activity` to see all the different types of activity layouts that are available
+
+**Intent**
+* To create an intent:
+```java
+Intent startIntent = new Intent(getApplicationContext(), secondActivity.class);
+```
+Use `startActivity` to start the second activity:
+```java
+startActivity(startIntent);
+```
+* Use `putExtra` to give extra information to the second activity:
+```java
+startIntent.putExtra("identifier_name", value);
+```
+* In the second activity, inside the `onCreate` method, use `hasExtra` to check if there was any information passed to it with the intent
+```java
+if (getIntent().hasExtra("identifer_name")) {
+	// get the value associated with the identifier_name
+	String s = getIntent().getExtras().getString("identifier_name");
+}
+```
+**Using a web browser**
+* `resolveActivity` broadcasts the request, asking android for a list of other apps that can process the activity
+* If the list of apps that can perform the intent is not empty, then the activity can be started
+* During the `resolveActivity` phase, the user will be prompted to pick an app from a list of apps that can perform the intent
+```java
+String google = "http://www.google.com";
+Uri webAddr = Uri.parse(google);
+Intent goToGoogle = new Intent(Intent.ACTION_VIEW, webAddr);
+if (goToGoogle.resolveActivity(getPackageManager()) != null) {
+	startActivity(goToGoogle);
+}
+```
+---
+**Sample code to demonstrate intents**
+* **Main Activity**
+```java
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button secondActivityButton = (Button) findViewById(R.id.secondActivityButton);
+        secondActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), SecondActivity.class);
+                startIntent.putExtra("testing", "hello there!");
+                startActivity(startIntent);
+            }
+        });
+
+        Button googleButton = (Button) findViewById(R.id.googleButton);
+        googleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String google = "http://www.google.com";
+                Uri webAddr = Uri.parse(google);
+                Intent goToGoogle = new Intent(Intent.ACTION_VIEW, webAddr);
+                if (goToGoogle.resolveActivity(getPackageManager()) != null) {
+                    startActivity(goToGoogle);
+                }
+            }
+        });
+    }
+}
+```
+* **Second Activity**
+```java
+public class SecondActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+
+        if (getIntent().hasExtra("testing")) {
+            TextView textView = (TextView) findViewById(R.id.textView);
+            String s = getIntent().getExtras().getString("testing");
+            textView.setText(s);
+        }
     }
 }
 ```
