@@ -288,7 +288,7 @@ public class SecondActivity extends AppCompatActivity {
 * Setup arrays containing all the required information for the adaptor to populate the list view
 ```java
 String[] items = getResources().getStringArray(R.array.items);
-String[] descriptions = getResources().getStringArray(R.array.descriptions );
+String[] descriptions = getResources().getStringArray(R.array.descriptions);
 ```
 * Create an adaptor class
 	* `app` -> `java` -> select the top row -> `new` -> `Java Class`
