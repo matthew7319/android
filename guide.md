@@ -1,9 +1,9 @@
 ## Matthew's Android Cheatsheet
-[Markdown Guide]([](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet))
+[Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
 [Youtube Guide by Bill Butterfield](https://www.youtube.com/watch?v=dFlPARW5IX8&list=PLp9HFLVct_ZvMa7IVdQyUUyh8t2re9apm)
 
-[Online Markdown Editor]([](https://stackedit.io/app#))
+[Online Markdown Editor](https://stackedit.io/app#)
 
 ---
 **Configuring a new project**
