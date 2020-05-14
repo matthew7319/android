@@ -308,7 +308,7 @@ LayoutInflater mInflator; // m signifies a member field
 ```
 
 **Adaptor Constructor**
-	* MainActivity` will pass the relevant arrays needed for the item adaptor to populate all the entries
+	* MainActivity will pass the relevant arrays needed for the item adaptor to populate all the entries
 ```java
 public ItemAdaptor(Context context, String[] items, String[] descriptions, String[] prices) {
 	this.items = items;
