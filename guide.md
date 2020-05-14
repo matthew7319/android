@@ -1,5 +1,5 @@
 
-## Matthew's Android Cheatsheet
+# Matthew's Android Cheatsheet
 [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
 [Youtube Guide by Bill Butterfield](https://www.youtube.com/watch?v=dFlPARW5IX8&list=PLp9HFLVct_ZvMa7IVdQyUUyh8t2re9apm)
@@ -7,6 +7,8 @@
 [Online Markdown Editor](https://stackedit.io/app#)
 
 ---
+# Preliminaries
+
 **Configuring a new project**
 * "Choose your project" -> `Empty Activity`
 * Package name -> organisation name
@@ -77,6 +79,8 @@ toast.show();
 ```
 * Available toast duration: `LENGTH_SHORT` (2.0s) and `LENGTH_LONG` (3.5s)
 ---
+# Buttons
+
 **Buttons Workflow**
 
 * After adding a button, name the button under the `ID` section
@@ -148,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 ---
+# Intents and Second Activity
+
 **Core Elements of Android Development**
 * **Activity**: A rectangular box that displays something
 * **Intent**: An action being requested that the device should try to perform
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 ```java
 Intent startIntent = new Intent(getApplicationContext(), secondActivity.class);
 ```
-Use `startActivity` to start the second activity:
+* Use `startActivity` to start the second activity:
 ```java
 startActivity(startIntent);
 ```
@@ -243,3 +249,98 @@ public class SecondActivity extends AppCompatActivity {
     }
 }
 ```
+---
+# Creating a list of items using `ListView` + Add an image with `ImageView`
+
+**ListView**
+* `Legacy` -> `ListView`
+* Populate the strings.xml file with the values desired
+```xml
+<resources>
+    <string name="app_name">List App</string>
+    
+    <string-array name="items">
+        <item>item 1</item>
+        <item>item 2</item>
+        <item>item 3</item>
+    </string-array>
+    
+    <string-array name="prices">
+        <item>$1.00</item>
+        <item>$2.00</item>
+        <item>$3.00</item>
+    </string-array>
+    
+    <string-array name="descriptions">
+        <item>description 1</item>
+        <item>description 2</item>
+        <item>description 3</item>
+    </string-array>
+</resources>
+```
+* Create a layout file for the listview
+	* `App` -> `res` -> `layout` -> `new` -> `Layout Resource File`
+	* Set `Root Element` = `RelativeLayout`
+	* When dragging in, say, a `TextView` box, there will be arrows that displays how the box is aligned relative to the box of the entry
+
+**Adaptors**
+* An adaptor tells the `ListView` *how* to display the information in each entry
+* Setup arrays containing all the required information for the adaptor to populate the list view
+```java
+String[] items = getResources().getStringArray(R.array.items);
+String[] descriptions = getResources().getStringArray(R.array.descriptions );
+```
+* Create an adaptor class
+	* `app` -> `java` -> select the top row -> `new` -> `Java Class`
+	* Set `Superclass` = `BaseAdaptor` (`android.widget.BaseAdaptor`)
+* In Android Studios, you can hover your mouse over the class name if it extends/implements another class, and click the red light bulb and click `Implement Methods`
+* The following methods are required for all adaptors:
+	* `getCount()`: "How many entries are there?"
+	* `getItem()`: "What is the ith item?"
+	* `getItemID()`: "What is the ID of this item?"
+	* `getView()`: "How do I present these information?"
+
+**Layout Inflator**
+* Takes in an xml file, unwraps it, populates it with items, then wraps it up for the `getView` method
+* Within the adaptor class, create a member field: `LayoutInflater`
+```java
+LayoutInflater mInflator; // m signifies a member field
+```
+
+**Adaptor Constructor**
+	* MainActivity` will pass the relevant arrays needed for the item adaptor to populate all the entries
+```java
+public ItemAdaptor(Context context, String[] items, String[] descriptions, String[] prices) {
+	this.items = items;
+	this.descriptions = descriptions;
+	this.prices = prices;
+	m_inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATOR_SERVICE);
+}
+```
+
+**GetView**
+* Inflate the view, then `findViewByID` using that view (NOT using R this time)
+* Once everything is set, return that view
+```java
+@Override
+public View getview(int i, View view, ViewGroup viewGroup) {
+	View v = mInflator.inflate(R.layout.my_listview_detail, null);
+
+	TextView nameTextView = (TextView) findViewByID(v.id.nameTextView);
+	TextView descriptionTextView= (TextView) findViewByID(v.id.descriptionTextView);
+	TextView priceTextView= (TextView) findViewByID(v.id.priceTextView);
+
+	String name = names[i];
+	String description = descriptions[i];
+	String price = prices[i];
+
+	nameTextView.setText(name);
+	descriptionTextview.setText(description);
+	priceTextView.setText(price;
+
+	return v;
+}
+```
+
+**onItemClickListener**
+
