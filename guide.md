@@ -1,10 +1,19 @@
 
 # Matthew's Android Cheatsheet
-[Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+---
+# Useful Links
+* [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+* [Youtube Guide by Bill Butterfield](https://www.youtube.com/watch?v=dFlPARW5IX8&list=PLp9HFLVct_ZvMa7IVdQyUUyh8t2re9apm)
+* [Online Markdown Editor](https://stackedit.io/app#)
 
-[Youtube Guide by Bill Butterfield](https://www.youtube.com/watch?v=dFlPARW5IX8&list=PLp9HFLVct_ZvMa7IVdQyUUyh8t2re9apm)
-
-[Online Markdown Editor](https://stackedit.io/app#)
+---
+# Topics
+* [Preliminaries](#preliminaries)
+* [Context](#context)
+* [Buttons](#buttons)
+* [Intents and Second Activity](#intents-and-second-activity)
+* [Creating a list of items with `ListView` ](#creating-a-list-of-items-with-listview)
+* [Images](#images)
 
 ---
 # Preliminaries
@@ -24,8 +33,8 @@
 **File Management**
 * Found at the left panel, at the top panel (the thing with the dropdown selection)
 * set the filter to `Android` to see the files that android cares about
-* `manifests`: set things like entry point for the app
-* `java`: where we find all the java code
+* `manifests`: set things like entry point for the app, app permissions etc
+* `java`: where we find all the java and kotlin code
 * `res`: where all the resources are found
 	* `drawables`: drag and drop images into it
 	* `layout`: where the xml files are found
@@ -79,6 +88,26 @@ toast.show();
 ```
 * Available toast duration: `LENGTH_SHORT` (2.0s) and `LENGTH_LONG` (3.5s)
 ---
+
+# Context
+[MindOrks's blog](https://blog.mindorks.com/understanding-context-in-android-application-330913e32514)
+
+* `Context` is the current state of the application
+* Used to get information regarding the activity and the application
+* Used to get access to databases, resources etc
+* `Activity` and `Application` class extends `Context`
+
+**Application Context**
+* Analogous to a global variable
+* `ApplicationContext` is tied to the life cycle of the application
+* Use this if you need a context whose life cycle is not tied to the current context or when a context is being passed beyond the scope of the activity
+* To initialize a library in an activity, use the `ApplicationContext` and **not** the `ActivityContext`
+
+**Activity Context**
+* Analogous to a local variable
+* `ActivityContext` is tied to the life cycle of an activity
+---
+
 # Buttons
 
 **Buttons Workflow**
@@ -173,7 +202,8 @@ Intent startIntent = new Intent(getApplicationContext(), secondActivity.class);
 ```java
 startActivity(startIntent);
 ```
-* Use `putExtra` to give extra information to the second activity:
+* Use `putExtra` to give extra information to the second activity
+	* It is customary to prepend the package name to the identifier name
 ```java
 startIntent.putExtra("identifier_name", value);
 ```
@@ -250,7 +280,7 @@ public class SecondActivity extends AppCompatActivity {
 }
 ```
 ---
-# Creating a list of items using `ListView` + Add an image with `ImageView`
+# Creating a list of items with `ListView` 
 
 **ListView**
 * `Legacy` -> `ListView`
@@ -283,12 +313,16 @@ public class SecondActivity extends AppCompatActivity {
 	* Set `Root Element` = `RelativeLayout`
 	* When dragging in, say, a `TextView` box, there will be arrows that displays how the box is aligned relative to the box of the entry
 
+**List View Detail**
+* Create a separate xml file that describes the layout of the entries for the list view
+* This will be used by the view inflator found within the adaptor later
+
 **Adaptors**
 * An adaptor tells the `ListView` *how* to display the information in each entry
 * Setup arrays containing all the required information for the adaptor to populate the list view
 ```java
 String[] items = getResources().getStringArray(R.array.items);
-String[] descriptions = getResources().getStringArray(R.array.descriptions);
+String[] descriptions = getResources().getStringArray(R.array.descriptions );
 ```
 * Create an adaptor class
 	* `app` -> `java` -> select the top row -> `new` -> `Java Class`
@@ -307,18 +341,18 @@ String[] descriptions = getResources().getStringArray(R.array.descriptions);
 LayoutInflater mInflator; // m signifies a member field
 ```
 
-**Adaptor Constructor**
+**Item Adaptor Constructor**
 * MainActivity will pass the relevant arrays needed for the item adaptor to populate all the entries
 ```java
-public ItemAdaptor(Context context, String[] items, String[] descriptions, String[] prices) {
+public ItemAdaptor(Context c, String[] items, String[] descriptions, String[] prices) {
 	this.items = items;
 	this.descriptions = descriptions;
 	this.prices = prices;
-	m_inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATOR_SERVICE);
+	m_inflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATOR_SERVICE);
 }
 ```
 
-**GetView**
+**`ItemAdaptor` -> `GetView`**
 * Inflate the view, then `findViewByID` using that view (NOT using R this time)
 * Once everything is set, return that view
 ```java
@@ -326,9 +360,9 @@ public ItemAdaptor(Context context, String[] items, String[] descriptions, Strin
 public View getview(int i, View view, ViewGroup viewGroup) {
 	View v = mInflator.inflate(R.layout.my_listview_detail, null);
 
-	TextView nameTextView = (TextView) findViewByID(v.id.nameTextView);
-	TextView descriptionTextView= (TextView) findViewByID(v.id.descriptionTextView);
-	TextView priceTextView= (TextView) findViewByID(v.id.priceTextView);
+	TextView nameTextView = (TextView) v.findViewById(R.id.nameTextView);
+	TextView descriptionTextView= (TextView) v.findViewById(R.id.descriptionTextView);
+	TextView priceTextView= (TextView) v.findViewById(R.id.priceTextView);
 
 	String name = names[i];
 	String description = descriptions[i];
@@ -341,6 +375,177 @@ public View getview(int i, View view, ViewGroup viewGroup) {
 	return v;
 }
 ```
+---
+**Sample code to demonstrate `ListViews` and `ItemAdaptors`**
 
+* Main Activity
+```java
+public class MainActivity extends AppCompatActivity {
+
+    ListView myListView;
+    String[] items;
+    String[] descriptions;
+    String[] prices;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Resources res = getResources();
+        myListView = (ListView) findViewById(R.id.myListView);
+        items = res.getStringArray(R.array.items);
+        descriptions = res.getStringArray(R.array.descriptions);
+        prices = res.getStringArray(R.array.prices);
+
+        ItemAdaptor itemAdaptor = new ItemAdaptor(this, items, descriptions, prices);
+        myListView.setAdapter(itemAdaptor);
+    }
+}
+```
+* `ItemAdaptor`
+	* `my_listview_detail` is an xml file that describes the layouts of buttons within a single entry of the list view
+```java
+public class ItemAdaptor extends BaseAdapter {
+
+    private LayoutInflater mInflator;
+    private String[] items;
+    private String[] descriptions;
+    private String[] prices;
+
+    public ItemAdaptor(Context context, String[] items, String[] descriptions, String[] prices) {
+        this.items = items;
+        this.descriptions = descriptions;
+        this.prices = prices;
+        mInflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    @Override
+    public int getCount() {
+        return items.length;
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return items[i];
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        View v = mInflator.inflate(R.layout.my_listview_detail, null);
+
+        TextView nameTextView = (TextView) v.findViewById(R.id.nameTextView);
+        TextView descriptionTextView = (TextView) v.findViewById(R.id.descriptionTextView);
+        TextView priceTextView = (TextView) v.findViewById(R.id.priceTextView);
+
+        nameTextView.setText(items[i]);
+        descriptionTextView.setText(descriptions[i]);
+        priceTextView.setText(prices[i]);
+
+        return v;
+    }
+}
+```
+---
 **onItemClickListener**
+* Tie an intent/action to a button press of something in the list view
+* `int i`: i is the index of the entry that is clicked
+```java
+myListView.setOnItemClickListener(new AdapterView.OnItemClickListener()) {
+	@Override
+	public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+		// intent
+	}
+}
+```
+---
+# Images
 
+**Adding images to resources**
+
+* Add images to `res` -> `drawables`
+* Reference images using `R.drawable.image_name`
+	* Image extension is not required (eg '.jpeg' is omitted)
+* Image type is `int`
+```java
+private int getImg(int i) {
+	if (i == 0) {
+		return R.drawable.apple;
+	}
+	else {
+		return R.drawable.orange;
+	}
+}
+```
+
+**Image Scaling**
+* Just copy and paste this...
+* Sometimes it is safer to also check the picture height
+```java
+private void setPic(ImageView img, int pic) {
+	Display screen = getWindowManager().getDefaultDisplay();
+	BitmapFactory.Options options = new BitmapFactory.Options();
+	options.inJustDecodeBounds = true;
+	BitmapFactory.decodeResource(getResources(), pic, options);
+	int imgWidth = options.outWidth;
+	int screenWidth = screen.getWidth();
+	if (imgWidth > screenWidth) {
+		int ratio = Math.round((float) imgWidth / (float) screenWidth);
+		options.inSampleSize = ratio;
+	}
+	options.inJustDecodeBounds = false;
+	Bitmap scaledImg = BitmapFactory.decodeResource(getResources(), pic, options);
+	img.setImageBitmap(scaledImg);
+}
+```
+
+**Sample code to demonstrate images**
+* In the detail activity:
+```java
+public class DetailActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detail);
+
+        Intent intent = getIntent();
+        int entryID = intent.getIntExtra("entry_ID", -1);
+        Toast.makeText(getApplicationContext(), "setting up picture with id " + entryID, Toast.LENGTH_SHORT).show();
+        ImageView img = (ImageView) findViewById(R.id.imageView);
+        if (entryID != -1) {
+            setPic(img, getPic(entryID));
+        }
+    }
+
+    private int getPic(int id) {
+        switch (id) {
+            case 0: return R.drawable.apple;
+            case 1: return R.drawable.pear;
+            case 2: return R.drawable.orange;
+            default: return -1;
+        }
+    }
+
+    private void setPic(ImageView img, int pic) {
+        Display screen = getWindowManager().getDefaultDisplay();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), pic, options);
+        int imgWidth = options.outWidth;
+        int screenWidth = screen.getWidth();
+        if (imgWidth > screenWidth) {
+            int ratio = Math.round((float) imgWidth / (float) screenWidth);
+            options.inSampleSize = ratio;
+        }
+        options.inJustDecodeBounds = false;
+        Bitmap scaledImg = BitmapFactory.decodeResource(getResources(), pic, options);
+        img.setImageBitmap(scaledImg);
+    }
+}
+```
