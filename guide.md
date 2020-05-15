@@ -13,7 +13,7 @@
 * [Buttons](#buttons)
 * [Intents and Second Activity](#intents-and-second-activity)
 * [Creating a list of items with `ListView` ](#creating-a-list-of-items-with-listview)
-* [Images](#images)
+* [Adding Images with `ImageView`](#adding-images-with-imageview)
 
 ---
 # Preliminaries
@@ -464,7 +464,7 @@ myListView.setOnItemClickListener(new AdapterView.OnItemClickListener()) {
 }
 ```
 ---
-# Images
+# Adding Images with `ImageView`
 
 **Adding images to resources**
 
