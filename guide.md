@@ -1,11 +1,15 @@
 
+  
 # Matthew's Android Cheatsheet
+
+# TODO
+* Add views to layouts programmatically
 ---
 # Useful Links
 * [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 * [Youtube Guide by Bill Butterfield](https://www.youtube.com/watch?v=dFlPARW5IX8&list=PLp9HFLVct_ZvMa7IVdQyUUyh8t2re9apm)
 * [Online Markdown Editor](https://stackedit.io/app#)
-
+* [Coursera Guide on Graphics](https://www.coursera.org/lecture/android-programming-2/graphics-and-animation-part-1-d6pOn)
 ---
 # Topics
 * [Preliminaries](#preliminaries)
@@ -14,7 +18,8 @@
 * [Intents and Second Activity](#intents-and-second-activity)
 * [Creating a list of items with `ListView` ](#creating-a-list-of-items-with-listview)
 * [Adding Images with `ImageView`](#adding-images-with-imageview)
-
+* [`onTouchListener` and `MotionEvent`](#ontouchlistener-and-motionevent)
+* [Graphics](#graphics)
 ---
 # Preliminaries
 
@@ -79,6 +84,11 @@
 * To biased a position, click and drag the slider found below the box in the `properties` tab on the right side of the xml editor
 * After tying an anchor, click and drag the box to set the offset
 * It might be more convenient to switch to the text-based xml editor and enter the offset value directly
+---
+**RelativeLayout**
+* To convet between different layouts, right click the current layout in the component tree -> `Convert View` and select layout
+* Don't use this. Just use constrained layout
+* To assign an id to the layout, go to the xml file and add in `android:id="@+id/myLayoutName"`	
 ---
 **Toast**
 * The mini popup message that shows up at the bottom of the screen Eg. `"loading..."`
@@ -549,3 +559,71 @@ public class DetailActivity extends AppCompatActivity {
     }
 }
 ```
+
+---
+# `OnTouchListener` and `MotionEvent`
+
+* handles the events that happen when the user touches the screen and moves the finger/mouse around
+* `onClickListener` is called when the user lifts the finger
+* this is called from the first user touch until the user lifts the finger
+* `onTouch` returns trues to signal to the OS that this `onTouch` implementation wants to handle the touch event
+
+**Constaint Layout Version (Use this)**
+```java
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+    private ConstraintLayout myLayout = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        myLayout = (ConstraintLayout) findViewById(R.id.myLayout);
+
+        myLayout.setOnTouchListener(new ConstraintLayout.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
+                imageView.setX(x - 40);
+                imageView.setY(y - 40);
+                return true;
+            }
+        });
+    }
+}
+```
+
+**Relative Layout Version**
+```java
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+    private RelativeLayout myLayout = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        myLayout = (RelativeLayout) findViewById(R.id.myLayout);
+
+        myLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
+                imageView.setX(x);
+                imageView.setY(y);
+                return true;
+            }
+        });
+    }
+}
+```
+
+# Graphics
