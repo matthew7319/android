@@ -1,5 +1,3 @@
-
-  
 # Matthew's Android Cheatsheet
 
 # TODO
@@ -568,7 +566,44 @@ public class DetailActivity extends AppCompatActivity {
 * this is called from the first user touch until the user lifts the finger
 * `onTouch` returns trues to signal to the OS that this `onTouch` implementation wants to handle the touch event
 
-**Constaint Layout Version (Use this)**
+**`OnTouchListener` for Buttons**
+* Tell the activity to implement `View.OnTouchListener`
+* Alternative methods (not recommended) is to create a separate class and pass that object in
+* IDE will prompt you and say that the `OnClick` method for the `setOnTouchListener` implementation is not implemented. Ignore that.
+* The X and Y values returned by the getX() and getY() method returns a value relative to the button. Manually offset these values to get the moving object to coincide with the touch location. The moving object will also be displaced relative to the layout it was fixed to (applies to both constraint and relative)
+```java
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
+
+    private ImageView imageView;
+    private Button button;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        button = (Button) findViewById(R.id.button);
+
+        button.setOnTouchListener(this);
+    }
+
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        Toast.makeText(getApplicationContext(), x + " " + y, Toast.LENGTH_SHORT).show();
+        imageView.setX(x);
+        imageView.setY(y);
+        return true;
+    }
+}
+```
+**`OnTouchListener` for Multiple Buttons using ID**
+# TODO
+
+**`OnTouchListener` for Constraint Layout**
 ```java
 public class MainActivity extends AppCompatActivity {
 
@@ -588,8 +623,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 float x = motionEvent.getX();
                 float y = motionEvent.getY();
-                imageView.setX(x - 40);
-                imageView.setY(y - 40);
+                imageView.setX(x);
+                imageView.setY(y);
                 return true;
             }
         });
@@ -597,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-**Relative Layout Version**
+**`OnTouchListener` for Relative Layout**
 ```java
 public class MainActivity extends AppCompatActivity {
 
