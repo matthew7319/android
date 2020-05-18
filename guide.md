@@ -1,3 +1,4 @@
+
 # Matthew's Android Cheatsheet
 
 # TODO
@@ -17,6 +18,7 @@
 * [Creating a list of items with `ListView` ](#creating-a-list-of-items-with-listview)
 * [Adding Images with `ImageView`](#adding-images-with-imageview)
 * [`onTouchListener` and `MotionEvent`](#ontouchlistener-and-motionevent)
+* [Dynamic Views](#dynamic-views)
 * [Graphics](#graphics)
 ---
 # Preliminaries
@@ -601,7 +603,46 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 }
 ```
 **`OnTouchListener` for Multiple Buttons using ID**
-# TODO
+* Set ID for each button
+* Check the ID of the view with `getID`
+
+```java
+void intialization(){
+     Button m1, m2, m3, m4;
+     ... //do initialization stuff
+     m1.setId(1);
+     m2.setId(2);
+     m3.setId(3);
+     m4.setId(4);
+     MyTouchListener touchListener = new MyTouchListener();
+     m1.setOnTouchListener(touchListener);
+     m2.setOnTouchListener(touchListener);
+     m3.setOnTouchListener(touchListener);
+     m4.setOnTouchListener(touchListener);
+ }
+
+public class MyTouchListener implements OnTouchListener {
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch(v.getId()){
+            case 1:
+                //do stuff for button 1
+                break;
+            case 2:
+                //do stuff for button 2
+                break;
+            case 3:
+                //do stuff for button 3
+                break;
+            case 4:
+                //do stuff for button 4
+                break;
+        }
+        return true;
+    }
+
+}
+```
 
 **`OnTouchListener` for Constraint Layout**
 ```java
@@ -660,5 +701,57 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
+# Dynamic Views
 
+* [Guide](https://exaud.com/constraintlayout/)
+* Views are usually added at compile time
+* Views can also be added at runtime programatically
+```java
+private void buildDynamicConstraintLayout() {
+	// ConstraintLayout
+	ConstraintLayout constraintLayout = findViewById(R.id.constraintlayout);
+
+	// Create Button 1
+	Button button1 = new Button(this);
+	// Generate an Id and assign it to programmatically created Button
+	button1.setId(View.generateViewId());
+	button1.setText("Button 1");
+	button1.setLayoutParams(new ConstraintLayout.LayoutParams(
+		ViewGroup.LayoutParams.WRAP_CONTENT,
+		ViewGroup.LayoutParams.WRAP_CONTENT));
+	// Add programmatically created Button to ConstraintLayout
+	constraintLayout.addView(button1);
+
+	// Create Button 2
+	Button button2 = new Button(this);
+	// Generate an Id and assign it to programmatically created Button
+	button2.setId(View.generateViewId());
+	button2.setText("Button 2");
+	button2.setLayoutParams(new ConstraintLayout.LayoutParams(
+		ViewGroup.LayoutParams.WRAP_CONTENT,
+		ViewGroup.LayoutParams.WRAP_CONTENT));
+	// Add programmatically created Button to ConstraintLayout
+	constraintLayout.addView(button2);
+
+	// Create ConstraintSet
+	ConstraintSet constraintSet = new ConstraintSet();
+	// Make sure all previous Constraints from ConstraintLayout are not lost
+	constraintSet.clone(constraintLayout);
+
+	// Create Rule that states that the START of Button 1 will be positioned at the END of Button 2
+	constraintSet.connect(button2.getId(), ConstraintSet.START, button1.getId(), ConstraintSet.END);
+	constraintSet.applyTo(constraintLayout);
+}
+```
 # Graphics
+
+**2D Graphics Overview**
+* `ImageView` and `Canvas` are used
+* Drawing to an `ImageView` is simpler but more restricted. Used for simple graphics with no plan to update them often
+* Drawing to a `Canvas` is more complicated but more powerful and flexible. Use for complex graphics with frequent updates
+* We can draw use the `Drawable` class
+
+**Drawable**
+* Something that can be drawn eg bitmaps, colour, shape
+* Eg. `ShapeDrawable`, `BitmapDrawable` (A matrix of pixels), `ColorDrawable` (Represents a solid colour)
+* We often create a `Drawable` object and set it to a view, then let the view handle the actual drawing. Can be done either via XML file or programmatically
