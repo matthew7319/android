@@ -1,4 +1,5 @@
 
+  
 # Matthew's Android Cheatsheet
 
 # TODO
@@ -751,7 +752,100 @@ private void buildDynamicConstraintLayout() {
 * Drawing to a `Canvas` is more complicated but more powerful and flexible. Use for complex graphics with frequent updates
 * We can draw use the `Drawable` class
 
+**Units**
+* [Credits](https://stackoverflow.com/questions/2025282/what-is-the-difference-between-px-dip-dp-and-sp)
+* `px`: **Pixels**
+	* corresponds to actual pixels on the screen.
+* `dp`: **Density-Independent Pixels**
+	* an abstract unit that is based on the physical density of the screen.
+	* These units are relative to a 160 dpi screen, so one dp is one pixel on a 160 dpi screen.
+	* The ratio of dp-to-pixel will change with the screen density, but not necessarily in direct proportion.
+	* Note: The compiler accepts both "dip" and "dp", though "dp" is more consistent with "sp".
+* `sp`: **Scale-Independent Pixels**
+	* this is like the dp unit, but it is also scaled by the user's font size preference.
+	* It is recommended you use this unit when specifying font sizes, so they will be adjusted for both the screen density and user's preference.
+
+
 **Drawable**
 * Something that can be drawn eg bitmaps, colour, shape
-* Eg. `ShapeDrawable`, `BitmapDrawable` (A matrix of pixels), `ColorDrawable` (Represents a solid colour)
+* The following drawable classes are available:
+	* `ShapeDrawable`
+	* `BitmapDrawable` (A matrix of pixels)
+	* `ColorDrawable` (Represents a solid colour)
 * We often create a `Drawable` object and set it to a view, then let the view handle the actual drawing. Can be done either via XML file or programmatically
+
+**Adding graphics via XML file**
+* There is also `layout_centreHorizontal` and `layout_centreVertical` available
+```java
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/appleDesc"
+        android:src="@drawable/apple" />
+</RelativeLayout>
+```
+* Corresponding `strings.xml` file
+```java
+<resources>
+    <string name="app_name">graphics_practice</string>
+    <string name="appleDesc">This is an apple</string>
+</resources>
+```
+
+**Adding image programmatically**
+* There are several rules to check out such as:
+	* `LEFT_OF` (+ view ID)
+	* `RIGHT_OF` (+ view ID) etc
+	* Create a new `dimens.xml` resource file
+	* Dimensions can be `dp`, `px` or `sp`
+	* Use `android:whatever="@dimen/my_value"` to reference values 
+```xml
+<?xml version="1.0" encoding="utf-8"?>  
+<resources>  
+	<dimen name="my_value">16dp</dimen>  
+</resources>
+```
+* Main Code
+```java
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+
+        ImageView imageView = new ImageView(getApplicationContext());
+        imageView.setImageDrawable(getResources().getDrawable(R.drawable.apple));
+
+        int width = 960;
+        int height = 936;
+
+        RelativeLayout.LayoutParams parems = new RelativeLayout.LayoutParams(width, height);
+        parems.addRule(RelativeLayout.CENTER_IN_PARENT);
+        imageView.setLayoutParams(parems);
+        relativeLayout.addView(imageView);
+    }
+}
+```
+
+**ShapeDrawable**
+* Used for drawing primitive shapes
+* Shapes are represented by subclasses of the ShapeDrawable class
+	* `PathShape` for drawing lines
+	* `RectShape` for drawing rectangles
+	* `OvalShape` for drawing ovals and rings
+* Shapes can be defined in both XML form and programmatically (See example below)
+
+**Example: Drawing two ovals, both of different colours, and both overlap**
