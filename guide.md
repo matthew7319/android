@@ -10,7 +10,6 @@
 * [Buttons](#buttons)
 * [Intents and Second Activity](#intents-and-second-activity)
 * [Creating a list of items with `ListView` ](#creating-a-list-of-items-with-listview)
-* [Adding Images with `ImageView`](#adding-images-with-imageview)
 * [`onTouchListener` and `MotionEvent`](#ontouchlistener-and-motionevent)
 * [Dynamic Views](#dynamic-views)
 ---
@@ -466,93 +465,6 @@ myListView.setOnItemClickListener(new AdapterView.OnItemClickListener()) {
 	}
 }
 ```
----
-# Adding Images with `ImageView`
-
-**Adding images to resources**
-
-* Add images to `res` -> `drawables`
-* Reference images using `R.drawable.image_name`
-	* Image extension is not required (eg '.jpeg' is omitted)
-* Image type is `int`
-```java
-private int getImg(int i) {
-	if (i == 0) {
-		return R.drawable.apple;
-	}
-	else {
-		return R.drawable.orange;
-	}
-}
-```
-
-**Image Scaling**
-* Just copy and paste this...
-* Sometimes it is safer to also check the picture height
-```java
-private void setPic(ImageView img, int pic) {
-	Display screen = getWindowManager().getDefaultDisplay();
-	BitmapFactory.Options options = new BitmapFactory.Options();
-	options.inJustDecodeBounds = true;
-	BitmapFactory.decodeResource(getResources(), pic, options);
-	int imgWidth = options.outWidth;
-	int screenWidth = screen.getWidth();
-	if (imgWidth > screenWidth) {
-		int ratio = Math.round((float) imgWidth / (float) screenWidth);
-		options.inSampleSize = ratio;
-	}
-	options.inJustDecodeBounds = false;
-	Bitmap scaledImg = BitmapFactory.decodeResource(getResources(), pic, options);
-	img.setImageBitmap(scaledImg);
-}
-```
-
-**Sample code to demonstrate images**
-* In the detail activity:
-```java
-public class DetailActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-
-        Intent intent = getIntent();
-        int entryID = intent.getIntExtra("entry_ID", -1);
-        Toast.makeText(getApplicationContext(), "setting up picture with id " + entryID, Toast.LENGTH_SHORT).show();
-        ImageView img = (ImageView) findViewById(R.id.imageView);
-        if (entryID != -1) {
-            setPic(img, getPic(entryID));
-        }
-    }
-
-    private int getPic(int id) {
-        switch (id) {
-            case 0: return R.drawable.apple;
-            case 1: return R.drawable.pear;
-            case 2: return R.drawable.orange;
-            default: return -1;
-        }
-    }
-
-    private void setPic(ImageView img, int pic) {
-        Display screen = getWindowManager().getDefaultDisplay();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), pic, options);
-        int imgWidth = options.outWidth;
-        int screenWidth = screen.getWidth();
-        if (imgWidth > screenWidth) {
-            int ratio = Math.round((float) imgWidth / (float) screenWidth);
-            options.inSampleSize = ratio;
-        }
-        options.inJustDecodeBounds = false;
-        Bitmap scaledImg = BitmapFactory.decodeResource(getResources(), pic, options);
-        img.setImageBitmap(scaledImg);
-    }
-}
-```
-
 ---
 # `OnTouchListener` and `MotionEvent`
 
