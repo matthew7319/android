@@ -1,11 +1,31 @@
-# Graphics Cheatsheet
+# Graphics and Animation Cheatsheet
+
 # Useful Links
 * [Online Markdown Editor](https://stackedit.io/app#)
 * [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
-* [Coursera Guide on Graphics](https://www.coursera.org/lecture/android-programming-2/graphics-and-animation-part-1-d6pOn)
+* [Coursera Guide on Graphics and Animation](https://www.coursera.org/lecture/android-programming-2/graphics-and-animation-part-1-d6pOn)
 ---
 # Topics
-
+* [ImageView and Canvas](#imageview-and-canvas)
+* [Units](#units)
+* [Colors](#colors)
+* [Drawable](#drawable)
+* [Adding Image Resource](#adding-image-resources)
+* [Image Scaling](#image-scaling)
+* [Adding Graphics via XML File](#adding-graphics-via-xml-file)
+* [Adding Images Programmatically](#adding-images-programmatically)
+* [dimens.xml](#dimens.xml)
+* [ShapeDrawable](#shapedrawable)
+* [Text View Style Parameters](#text-view-style-parameters)
+* [Drawing with a Canvas](#drawing-with-a-canvas)
+* 
+* ooooooooooooooooooooooooooooooooo
+* [View Animation](#view-animation)
+* [TransitionDrawable](#transitiondrawable)
+* [AnimationDrawable](#animationdrawable)
+* [Animation](#animation)
+* [Property Animation](#property-animation)
+* [ViewPropertyAnimator](#viewpropertyanimator)
 ---
 # `ImageView` and `Canvas`
 
@@ -30,13 +50,14 @@
 
 
 
-# Colours
+# Colors
 
 * Consists of A (Alpha- Opacity), R (Red), G (Green) and B (Blue), all 4 parameters given a value in the range [0, 255]
 * When colours are specified with `#` followed by 6 characters in the range [0, f], it is interpreted as RGB
 * When colours are specified with `#` followed by 8 characters in the range [0, f], it is interpreted as ARGB
 
 # `Drawable`
+
 * Something that can be drawn eg bitmaps, colour, shape
 * The following drawable classes are available:
 	* `ShapeDrawable`
@@ -365,7 +386,18 @@ public class MainActivity extends AppCompatActivity {
 	* `setTextSize()`
 	* `setColor()`
 	* `setAntiAlias()`- used to smooth out an image's jagged edges
+	
+**Drawing to Views**
 
+* A `Canvas` can draw to generic views or to a `surfaceView` subclass
+* Use this when updates are infrequent
+* System creates a custom view class
+* The system will provide the canvas to the view when it calls the views's `onDraw()` method
+
+**Drawing to SurfaceViews**
+* The system creates a custom `SurfaceView`
+* The system provides a secondary thread for drawing
+* The application provide its own canvas and has greater control over drawing
 
 # View Animation
 
@@ -491,6 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
 * A series of transformations is applied to the context of a view
 * Animation timings can be manipulated to give the effect of sequential or simultaneous changes
+* Often called a **tween** animation
 
 **Main**
 ```java
@@ -560,11 +593,157 @@ public class MainActivity extends AppCompatActivity {
 * This allows us to change the properties of an object over a period of time
 * View animations are restricted to the available transformations
 * Sometimes we wish to do more -> Use property animations
+* [Interpolator API](https://developer.android.com/guide/topics/graphics/prop-animation#api-overview)
 * **`ValueAnimator`**: The timing engine; The main class that controls the animation
 	* **`TimeInterpolator`**: The `ValueAnimator` contains a **`TimeInterpolator`**, which defines how values change as a function of time
+	* Use **`getAnimatedValue()`** to retrieve a value when required
 * **`AnimatorUpdateListener`**: Called back at every animation frame change. This has an `onAnimationupdate` method which gets called each time a new animation frame is created.
 * **`TypeEvaluator`**: Calculates a property's value at a given point in time. When we need to create our own interpolation because of the need for a custom type, this is used. This has an `evaluate` method which gets called.
 * **`AnimatorSet`**: This allows us to combine individual animations to create more complex animations
 
-**Example**
-* 
+**Example code: Color Changing**
+
+* `ArgbEvaluator()` handles color interpolation for us
+
+```java
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        
+        ValueAnimator valueAnimator = ValueAnimator.ofObject(
+                new ArgbEvaluator(), Color.RED, Color.BLUE);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                imageView.setBackgroundColor((Integer) valueAnimator.getAnimatedValue());
+            }
+        });
+
+        valueAnimator.setDuration(10000);
+        valueAnimator.start();
+    }
+}
+```
+
+**Example Code: Move an imageview**
+
+* Set the interpolator with **`.setInterpolator`**
+```java
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
+
+        float start = 0;
+        float end = 500;
+
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(start, end);
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                imageView.setX((Float) valueAnimator.getAnimatedValue());
+            }
+        });
+
+        valueAnimator.setDuration(1000);
+        valueAnimator.start();
+    }
+}
+```
+
+# `ViewPropertyAnimator`
+
+* A simplified animator for views that achieves the same functionalities as the view animations shown earlier
+* the `.animate()` method returns a `ViewPropertyAnimator` object
+
+```java
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        Button button = (Button) findViewById(R.id.button2);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imageView.setAlpha(0.0f);
+                fadeIn.run();
+            }
+        });
+    }
+
+    Runnable fadeIn = new Runnable() {
+        @Override
+        public void run() {
+            imageView.animate()
+                    .setDuration(3000)
+                    .setInterpolator(new LinearInterpolator())
+                    .alpha(1.0f)
+                    .withEndAction(rotate);
+        }
+    };
+
+    Runnable rotate = new Runnable() {
+        @Override
+        public void run() {
+            imageView.animate()
+                    .setDuration(4000)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .rotationBy(720.0f)
+                    .withEndAction(translate);
+        }
+    };
+
+    Runnable translate = new Runnable() {
+        @Override
+        public void run() {
+            float translateValue = getResources().getDimension(R.dimen.translation);
+            imageView.animate()
+                    .setDuration(3000)
+                    .setInterpolator(new OvershootInterpolator())
+                    .translationXBy(translateValue)
+                    .translationYBy(translateValue)
+                    .withEndAction(scale);
+        }
+    };
+
+    Runnable scale = new Runnable() {
+        @Override
+        public void run() {
+            imageView.animate()
+                    .setDuration(3000)
+                    .setInterpolator(new AnticipateInterpolator())
+                    .scaleXBy(1.0f)
+                    .scaleYBy(1.0f)
+                    .withEndAction(fadeOut);
+        }
+    };
+
+    Runnable fadeOut = new Runnable() {
+        @Override
+        public void run() {
+            imageView.animate()
+                    .setDuration(2000)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .alpha(0.0f);
+        }
+    };
+
+}
+```
