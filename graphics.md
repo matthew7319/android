@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
 # Drawing with a Canvas
 
 * For more complex drawings
+* Every view has a canvas
 * Four things are required:
 	* A bitmap- a matrix of pixels
 	* A Canvas- the things that hosts the drawing calls that updates the underlying bitmap
@@ -386,7 +387,10 @@ public class MainActivity extends AppCompatActivity {
 	* `setTextSize()`
 	* `setColor()`
 	* `setAntiAlias()`- used to smooth out an image's jagged edges
-	
+* **Canvas works in pixels**
+
+# TODO here
+---
 **Drawing to Views**
 
 * A `Canvas` can draw to generic views or to a `surfaceView` subclass
