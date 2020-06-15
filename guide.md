@@ -1,3 +1,4 @@
+
 # The Basics Cheatsheet
 # Useful Links
 * [Markdown Guide](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
@@ -120,6 +121,18 @@ toast.show();
 ```java
 Button addButton = (Button) findViewByID(R.id.addButton);
 ```
+```kotlin
+var addButton = findViewById<Button>(R.id.addButton)
+```
+* alternatively,
+```kotlin
+var addButton = findViewById(R.id.addButton) as Button
+```
+But the first version is preferred as we can do things like:
+```kotlin
+lateinit var editText: EditText
+editText = findViewById(R.id.addButton)	// auto type inference
+```
 **OnClickListener**
 ```java
 addButton.setOnClickListener(new View.OnClickListener) {
@@ -127,6 +140,11 @@ addButton.setOnClickListener(new View.OnClickListener) {
 	public void onClick(View view) {
 		// add actions here
 	}
+}
+```
+```kotlin
+addButton.setOnClickListener {
+	// add actions here
 }
 ```
 
@@ -179,6 +197,26 @@ public class MainActivity extends AppCompatActivity {
                 resultTextView.setText("" + c);
             }
         });
+    }
+}
+```
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var editText1 = findViewById<EditText>(R.id.editText1)
+        var editText2 = findViewById<EditText>(R.id.editText2)
+        var resultButton = findViewById<Button>(R.id.resultButton)
+        var addButton = findViewById<Button>(R.id.addButton)
+
+        addButton.setOnClickListener {
+            Toast.makeText(applicationContext, "adding", Toast.LENGTH_SHORT).show()
+            var num1 = Integer.parseInt(editText1.text.toString())
+            var num2 = Integer.parseInt(editText2.text.toString())
+            var num3 = num1 + num2
+            resultButton.setText(num3.toString())
+        }
     }
 }
 ```
