@@ -1,3 +1,4 @@
+
 # Graphics and Animation Cheatsheet
 
 # Useful Links
@@ -83,6 +84,10 @@ private int getImg(int i) {
 		return R.drawable.orange;
 	}
 }
+```
+```kotlin
+var myImageView = R.findViewById<ImageView>(R.id.myImageView)
+myImageView.setImageResource(...)
 ```
 
 # Image Scaling
